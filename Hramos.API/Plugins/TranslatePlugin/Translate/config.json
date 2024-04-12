@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "type": "completion",
+  "description": "Translate the user's text'",
+  "execution_settings": {
+    "default": {
+      "max_tokens": 1200,
+      "temperature": 0.1
+    }
+  },
+  "input_variables": [
+    {
+      "name": "input",
+      "description": "This is the text that the user wants to translate",
+      "required": true
+    },
+    {
+      "name": "lang",
+      "description": "The language the user wants to translate the text into",
+      "required": true
+    }
+  ]
+}

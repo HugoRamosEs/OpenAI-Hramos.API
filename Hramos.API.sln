@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34714.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hramos.API", "Hramos.API\Hramos.API.csproj", "{451C35B5-F498-4A2C-BAD2-44A2422DDC0E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{451C35B5-F498-4A2C-BAD2-44A2422DDC0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{451C35B5-F498-4A2C-BAD2-44A2422DDC0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{451C35B5-F498-4A2C-BAD2-44A2422DDC0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{451C35B5-F498-4A2C-BAD2-44A2422DDC0E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B1974EE6-366D-4113-9637-3695E786ACED}
+	EndGlobalSection
+EndGlobal
