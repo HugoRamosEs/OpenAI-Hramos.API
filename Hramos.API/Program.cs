@@ -9,6 +9,8 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions()
 });
 builder.Configuration.SetBasePath(Directory.GetCurrentDirectory());
 
+builder.Services.AddOptionsWithValidateOnStart<AzureOpenAI>().Bind(builder.Configuration.GetSection($@"{nameof(AzureOpenAI)}")).ValidateDataAnnotations();
+
 builder.Services.AddHealthChecks();
 
 builder.Services.AddEndpointsApiExplorer()
@@ -40,6 +42,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseStatusCodePages();
 app.MapControllers();
 
 app.Run();

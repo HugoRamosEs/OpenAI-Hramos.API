@@ -17,6 +17,6 @@ namespace Hramos.API.Extensions
         /// <param name="lang">Language to translate the text to.</param>
         /// <param name="text">Text to translate.</param>
         /// <returns>The translated text.</returns>
-        Task<string> GetTranslatedTextFromUserPrompt(string lang, string text);
+        Task<string> GetTranslatedTextFromUserPromptAsync(string lang, string text);
     }
 }

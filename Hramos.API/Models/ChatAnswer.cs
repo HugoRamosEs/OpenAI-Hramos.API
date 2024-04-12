@@ -31,7 +31,7 @@ namespace Hramos.API.Models
         }
 
         /// <inheritdoc />
-        public async Task<string> GetTranslatedTextFromUserPrompt(string lang, string text)
+        public async Task<string> GetTranslatedTextFromUserPromptAsync(string lang, string text)
         {
             var arguments = new KernelArguments
             {

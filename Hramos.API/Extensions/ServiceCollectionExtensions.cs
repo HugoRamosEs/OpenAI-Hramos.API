@@ -1,9 +1,5 @@
-﻿using Encamina.Enmarcha.AI.OpenAI.Azure;
-using Encamina.Enmarcha.SemanticKernel.Abstractions;
-using Microsoft.Extensions.Options;
-using Microsoft.SemanticKernel;
+﻿using Microsoft.SemanticKernel;
 
-using Hramos.API.Models.Objects;
 using Hramos.API.Models;
 using Hramos.API.Options;
 
