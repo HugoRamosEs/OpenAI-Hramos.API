@@ -1,15 +1,13 @@
 ﻿namespace Hramos.API.Options
 {
-    public class Constants
+    public static class Constants
     {
+        // App Constants...
         public const string AppTitle = "Hramos.API";
-        public const string AzureOpenAICredentialsRoute = "Options/AzureOpenAICredentials.json";
-        public const string PluginsDirectory = "Plugins";
+        public const string AppVersion = "v1";
+        public const string swaggerEndpoint = "/swagger/v1/swagger.json";
 
-        public static class Versioning
-        {
-            public const string QueryStringVersion = "1.0"; 
-            public const string HeaderVersion = "1.0"; 
-        }
+        // Path Constants...
+        public const string PluginsDirectory = "Plugins";
     }
 }

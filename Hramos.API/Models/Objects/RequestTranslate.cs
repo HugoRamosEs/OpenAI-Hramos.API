@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Encamina.Enmarcha.Core.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
-namespace Hramos.API.Models
+namespace Hramos.API.Models.Objects
 {
     public sealed class RequestTranslate
     {
@@ -8,12 +9,14 @@ namespace Hramos.API.Models
         /// Gets or sets the language to translate the text to.
         /// </summary>
         [Required]
+        [NotEmptyOrWhitespace]
         public string Lang { get; set; }
 
         /// <summary>
         /// Gets or sets the text to translate.
         /// </summary>
         [Required]
+        [NotEmptyOrWhitespace]
         public string Text { get; set; }
     }
 }

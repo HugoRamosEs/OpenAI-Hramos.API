@@ -1,5 +1,4 @@
 ﻿using Hramos.API.Extensions;
-using Hramos.API.Options;
 using Microsoft.SemanticKernel;
 
 namespace Hramos.API.Models
@@ -10,7 +9,6 @@ namespace Hramos.API.Models
     public class ChatAnswer : IChatAnswer
     {
         private readonly Kernel kernel;
-        private readonly string pluginsDirectory;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChatAnswer"/> class.
@@ -19,29 +17,31 @@ namespace Hramos.API.Models
         public ChatAnswer(Kernel kernel)
         {
             this.kernel = kernel;
-            this.pluginsDirectory = Path.Combine(Directory.GetCurrentDirectory(), Constants.PluginsDirectory);
         }
 
         /// <inheritdoc />
-        public async Task<string> GetAnswerFromUserPrompt(string prompt)
+        public async Task<string> GetAnswerFromUserPromptAsync(string prompt, CancellationToken cancellationToken)
         {
-            var result = await kernel.InvokePromptAsync(prompt);
-            string response = result.ToString();
-            return response;
+            var task = Task.Run(async () =>
+            {
+                return await kernel.InvokePromptAsync(prompt);
+            }, cancellationToken);
+
+            var result = await task;
+            return result.ToString();
         }
 
         /// <inheritdoc />
-        public async Task<string> GetTranslatedTextFromUserPromptAsync(string lang, string text)
+        public async Task<string> GetTranslatedTextFromUserPromptAsync(string lang, string input, CancellationToken cancellationToken)
         {
             var arguments = new KernelArguments
             {
                 { "lang", lang },
-                { "input", text }
+                { "input", input }
             };
 
-            var result = await kernel.InvokeAsync<string>("TranslatePlugin", "Translate", arguments);
-            string response = result.ToString();
-            return response;
+            var result = await kernel.InvokeAsync<string>("TranslatePlugin", "Translate", arguments, cancellationToken);
+            return result.ToString();
         }
     }
 }

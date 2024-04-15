@@ -1,7 +1,8 @@
-﻿using Microsoft.SemanticKernel;
-
+﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.SemanticKernel;
 using Hramos.API.Models;
 using Hramos.API.Options;
+using Microsoft.Extensions.Options;
 
 namespace Hramos.API.Extensions
 {
@@ -9,30 +10,10 @@ namespace Hramos.API.Extensions
     {
         public static IServiceCollection AddSemanticKernel(this IServiceCollection services)
         {
-            // GPT-4
-            //var azureOpenAIOptions = new AzureOpenAI
-            //{
-            //    ChatDeploymentName = "hramos-gpt-4-1106prev",
-            //    Endpoint = "https://hramos-azure-openai.openai.azure.com/",
-            //    Key = "355d1f33242545acb46e910556d0c9ab",
-            //    Model = "gpt-4",
-            //    EmbeddingDeploymentName = "hramos-ada-002"
-            //};
-
-            // GPT-3.5-TURBO
-            var azureOpenAIOptions = new AzureOpenAI
-            {
-                ChatDeploymentName = "hramos-gpt-35-turbo-16k",
-                Endpoint = "https://hramos-azure-openai.openai.azure.com/",
-                Key = "355d1f33242545acb46e910556d0c9ab",
-                Model = "gpt-35-turbo-16",
-                EmbeddingDeploymentName = "hramos-ada-002"
-            };
-
-            services.AddScoped(sp =>
+            services.TryAddScoped(sp =>
             {
                 var logger = sp.GetRequiredService<ILogger<Kernel>>();
-                // var options = sp.GetRequiredService<IOptions<SemanticKernelOptions>>().Value;
+                var azureOpenAIOptions = sp.GetRequiredService<IOptions<AzureOpenAIOptions>>().Value;
 
                 #pragma warning disable SKEXP0010
                 var kernelBuilder = Kernel.CreateBuilder()

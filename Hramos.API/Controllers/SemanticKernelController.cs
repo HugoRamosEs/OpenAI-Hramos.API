@@ -1,12 +1,9 @@
 ﻿using Encamina.Enmarcha.AI.Abstractions;
 using Encamina.Enmarcha.Core.DataAnnotations;
 using Hramos.API.Extensions;
-using Hramos.API.Models;
-using Hramos.API.Options;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
-using System.ComponentModel.DataAnnotations;
+using Hramos.API.Models.Objects;
 
 namespace Hramos.API.Controllers
 {
@@ -17,47 +14,28 @@ namespace Hramos.API.Controllers
         private readonly IStringSimilarityComparer stringSimilarityComparer;
         private readonly IChatAnswer chatAnswer;
 
-        public SemanticKernelController(IStringSimilarityComparer stringSimilarityComparer, IChatAnswer chatAnswer, IOptions<AzureOpenAI> options)
+        public SemanticKernelController(IStringSimilarityComparer stringSimilarityComparer, IChatAnswer chatAnswer)
         {
             this.stringSimilarityComparer = stringSimilarityComparer;
             this.chatAnswer = chatAnswer;
         }
 
-        [HttpGet("Cosine")]
+        [HttpPost("Cosine")]
         [SwaggerOperation(Summary = "Calculate the cosine similarity between two strings",
                           Description = "Returns the cosine similarity between two strings.")]
-        public async Task<IActionResult> Get([NotEmptyOrWhitespace] string str1, [NotEmptyOrWhitespace]  string str2, CancellationToken cancellationToken)
+        public async Task<IActionResult> Post(RequestCosine request, CancellationToken cancellationToken)
         {
-            try
-            {
-                var result = await stringSimilarityComparer.CompareAsync(str1, str2, cancellationToken);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Error: " + ex.Message);
-            }
+            var result = await stringSimilarityComparer.CompareAsync(request.Str1, request.Str2, cancellationToken);
+            return Ok(result);
         }
 
         [HttpPost("Chat")]
         [SwaggerOperation(Summary = "Get response from user prompt",
                           Description = "Returns the response from the user prompt.")]
-        public async Task<IActionResult> Post(string str1)
+        public async Task<IActionResult> Post([NotEmptyOrWhitespace] string str1, CancellationToken cancellationToken)
         {
-            if (string.IsNullOrWhiteSpace(str1))
-            {
-                return BadRequest("String must be provided.");
-            }
-
-            try
-            {
-                var result = await chatAnswer.GetAnswerFromUserPrompt(str1);
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, "Error: " + ex.Message);
-            }
+            var result = await chatAnswer.GetAnswerFromUserPromptAsync(str1, cancellationToken);
+            return Ok(result);
         }
 
         [HttpPost("Translate")]
@@ -65,13 +43,8 @@ namespace Hramos.API.Controllers
                           Description = "Returns the translated text from the user prompt.")]
         public async Task<IActionResult> Post(RequestTranslate request, CancellationToken cancellationToken)
         {
-
-            var result = await chatAnswer.GetTranslatedTextFromUserPromptAsync(request.Lang, request.Text);
-
-                throw new Exception("This is a test exception");
-
-                return Ok(result);
-            
+            var result = await chatAnswer.GetTranslatedTextFromUserPromptAsync(request.Lang, request.Text, cancellationToken);
+            return Ok(result);
         }
     }
 }
