@@ -1,7 +1,9 @@
+using Microsoft.OpenApi.Models;
+
+using System.Diagnostics;
+
 using Hramos.API.Extensions;
 using Hramos.API.Options;
-using Microsoft.OpenApi.Models;
-using System.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(new WebApplicationOptions()
 {
@@ -19,6 +21,7 @@ builder.Configuration.AddJsonFile($@"appsettings.{builder.Environment.Environmen
                      .AddEnvironmentVariables();
 
 builder.Services.AddOptionsWithValidateOnStart<AzureOpenAIOptions>().Bind(builder.Configuration.GetSection($@"{nameof(AzureOpenAIOptions)}")).ValidateDataAnnotations();
+builder.Services.AddOptionsWithValidateOnStart<QdrantOptions>().Bind(builder.Configuration.GetSection($@"{ nameof(QdrantOptions)}")).ValidateDataAnnotations();
 
 builder.Services.AddHealthChecks();
 
@@ -40,6 +43,8 @@ var app = builder.Build();
  
 if (app.Environment.IsDevelopment())
 {
+    builder.Logging.AddConsole();
+
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {

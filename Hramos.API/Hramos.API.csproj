@@ -7,21 +7,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Encamina.Enmarcha.AI" Version="8.1.5-preview-16" />
-    <PackageReference Include="Encamina.Enmarcha.AI.Abstractions" Version="8.1.5-preview-16" />
-    <PackageReference Include="Encamina.Enmarcha.AI.OpenAI.Abstractions" Version="8.1.5-preview-16" />
-    <PackageReference Include="Encamina.Enmarcha.AI.OpenAI.Azure" Version="8.1.5-preview-16" />
-    <PackageReference Include="Encamina.Enmarcha.AspNet.Mvc" Version="8.1.5-preview-16" />
-    <PackageReference Include="Encamina.Enmarcha.AspNet.OpenApi" Version="8.1.5-preview-16" />
-    <PackageReference Include="Encamina.Enmarcha.AspNet.OpenApi.Swashbuckle" Version="8.1.5-preview-16" />
-    <PackageReference Include="Encamina.Enmarcha.SemanticKernel" Version="8.1.5-preview-16" />
-    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0-preview.2.24128.5" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0-preview.2.24128.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.2.24128.5" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0-preview.2.24128.5" />
+    <PackageReference Include="Encamina.Enmarcha.AI" Version="8.1.6-preview-02" />
+    <PackageReference Include="Encamina.Enmarcha.AI.Abstractions" Version="8.1.6-preview-02" />
+    <PackageReference Include="Encamina.Enmarcha.AI.OpenAI.Abstractions" Version="8.1.6-preview-02" />
+    <PackageReference Include="Encamina.Enmarcha.AI.OpenAI.Azure" Version="8.1.6-preview-02" />
+    <PackageReference Include="Encamina.Enmarcha.AspNet.Mvc" Version="8.1.6-preview-02" />
+    <PackageReference Include="Encamina.Enmarcha.AspNet.OpenApi" Version="8.1.6-preview-02" />
+    <PackageReference Include="Encamina.Enmarcha.AspNet.OpenApi.Swashbuckle" Version="8.1.6-preview-02" />
+    <PackageReference Include="Encamina.Enmarcha.SemanticKernel" Version="8.1.6-preview-02" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0-preview.3.24172.9" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0-preview.3.24172.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.3.24172.9" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0-preview.3.24172.9" />
+    <PackageReference Include="Microsoft.KernelMemory.Core" Version="0.36.240415.2" />
     <PackageReference Include="Microsoft.SemanticKernel" Version="1.7.1" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Qdrant" Version="1.7.1-alpha" />
     <PackageReference Include="Microsoft.SemanticKernel.Plugins.Core" Version="1.7.1-alpha" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.5.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.5.0" />
   </ItemGroup>

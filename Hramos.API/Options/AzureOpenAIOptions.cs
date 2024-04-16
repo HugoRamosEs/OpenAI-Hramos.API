@@ -1,19 +1,50 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Encamina.Enmarcha.Core.DataAnnotations;
 
-namespace Hramos.API.Options
+using Microsoft.Extensions.Options;
+
+using System.ComponentModel.DataAnnotations;
+
+namespace Hramos.API.Options;
+
+public class AzureOpenAIOptions : IOptions<AzureOpenAIOptions>
 {
-    public class AzureOpenAIOptions : IOptions<AzureOpenAIOptions>
-    {
-        public string ChatDeploymentName { get; set; }
+    /// <summary>
+    /// Chat deployment name of the model deployed in Azure OpenAI Studio.
+    /// </summary>
+    [Required]
+    [NotEmptyOrWhitespace]
+    public string ChatDeploymentName { get; set; }
 
-        public string Endpoint { get; set; }
+    /// <summary>
+    /// Endpoint of the resource deployed in Azure.
+    /// </summary>
+    [Required]
+    [NotEmptyOrWhitespace]
+    public string Endpoint { get; set; }
 
-        public string Key { get; set; }
+    /// <summary>
+    /// Key of the Azure OpenAI resource deployed in Azure.
+    /// </summary>
+    [Required]
+    [NotEmptyOrWhitespace]
+    public string Key { get; set; }
 
-        public string Model { get; set; }
+    /// <summary>
+    /// Model of gpt used.
+    /// </summary>
+    [Required]
+    [NotEmptyOrWhitespace]
+    public string Model { get; set; }
 
-        public string EmbeddingDeploymentName { get; set; }
+    /// <summary>
+    /// Model of embedding used.
+    /// </summary>
+    [Required]
+    [NotEmptyOrWhitespace]
+    public string EmbeddingDeploymentName { get; set; }
 
-        public AzureOpenAIOptions Value => this;
-    }
+    /// <summary>
+    /// Object to return the value.
+    /// </summary>
+    public AzureOpenAIOptions Value => this;
 }
