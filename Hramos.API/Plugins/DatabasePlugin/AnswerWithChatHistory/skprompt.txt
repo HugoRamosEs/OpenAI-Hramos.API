@@ -1,0 +1,27 @@
+[HISTORY]  
+  
+{{$chatHistory}}  
+  
+[END HISTORY]  
+  
+[INSTRUCTIONS]  
+    
+1. The [HISTORY] should be utilized as a reference to ensure consistency and context in the conversation.     
+2. ALWAYS RESPOND with a FINAL ANSWER and DO NOT CONTINUE the conversation beyond providing that answer.  
+3. Your [ANSWER] MUST ALWAYS BE provided in the language specified by {{$locale}}.  
+  
+[END INSTRUCTIONS]  
+  
+[QUESTION]  
+  
+{{$input}}  
+  
+[END QUESTION]  
+  
+[IMPORTANT]  
+  
+- Remember, your [ANSWER] must always be in the language specified by {{$locale}}.  
+  
+[END IMPORTANT]  
+  
+[ANSWER]

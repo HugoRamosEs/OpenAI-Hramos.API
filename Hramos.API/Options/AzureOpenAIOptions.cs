@@ -1,11 +1,14 @@
-﻿using Encamina.Enmarcha.Core.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+
+using Encamina.Enmarcha.Core.DataAnnotations;
 
 using Microsoft.Extensions.Options;
 
-using System.ComponentModel.DataAnnotations;
-
 namespace Hramos.API.Options;
 
+/// <summary>
+/// Configuration options for Azure OpenAI service connection.
+/// </summary>
 public class AzureOpenAIOptions : IOptions<AzureOpenAIOptions>
 {
     /// <summary>

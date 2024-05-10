@@ -2,24 +2,31 @@
 
 using Encamina.Enmarcha.Core.DataAnnotations;
 
+using Hramos.API.Options;
+
 namespace Hramos.API.Models;
 
 /// <summary>
-/// A request to translate text.
+/// A chat request utilizing chat memory.
 /// </summary>
-public sealed class RequestTranslate
+public class RequestChatHistory
 {
     /// <summary>
-    /// Sets the language to translate the text to.
+    /// Conversation id.
     /// </summary>
     [Required]
     [NotEmptyOrWhitespace]
-    public string Lang { get; set; }
+    public string indexerId { get; set; }
 
     /// <summary>
-    /// Sets the text to translate.
+    /// The input to be processed.
     /// </summary>
     [Required]
     [NotEmptyOrWhitespace]
     public string Input { get; set; }
+
+    /// <summary>
+    /// The language to translate the answer.
+    /// </summary>
+    public string? Locale { get; set; } = Constants.DefaultLanguage;
 }

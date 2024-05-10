@@ -1,9 +1,12 @@
-﻿using Encamina.Enmarcha.Core.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
-using System.ComponentModel.DataAnnotations;
+using Encamina.Enmarcha.Core.DataAnnotations;
 
 namespace Hramos.API.Options;
 
+/// <summary>
+/// Configuration options for Qdrant service connection.
+/// </summary>
 public sealed class QdrantOptions
 {
     /// <summary>

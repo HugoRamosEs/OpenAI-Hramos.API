@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "type": "completion",
+  "description": "Provides a response to the user with stored information",
+  "execution_settings": {
+    "default": {
+      "max_tokens": 500,
+      "temperature": 0.5
+    }
+  },
+  "input_variables": [
+    {
+      "name": "input",
+      "description": "This is the user's question",
+      "required": true
+    },
+    {
+      "name": "context",
+      "description": "This is the context and source of information you have to answer the user's question",
+      "required": true
+    },
+    {
+      "name": "locale",
+      "description": "The language the user wants to recibe the answer",
+      "required": true
+    }
+  ]
+}

@@ -1,6 +1,6 @@
-using Microsoft.OpenApi.Models;
-
 using System.Diagnostics;
+
+using Microsoft.OpenApi.Models;
 
 using Hramos.API.Extensions;
 using Hramos.API.Options;
@@ -11,6 +11,7 @@ var builder = WebApplication.CreateBuilder(new WebApplicationOptions()
     ContentRootPath = Directory.GetCurrentDirectory(),
 });
 
+/* Load Configuration */
 if (Debugger.IsAttached)
 {
     builder.Configuration.AddJsonFile(@"appsettings.debug.json", optional: true, reloadOnChange: true);
@@ -20,17 +21,26 @@ builder.Configuration.AddJsonFile($@"appsettings.{builder.Environment.Environmen
                      .AddJsonFile($@"appsettings.{Environment.UserName}.json", optional: true, reloadOnChange: true)
                      .AddEnvironmentVariables();
 
+// Azure and Qdrant options.
 builder.Services.AddOptionsWithValidateOnStart<AzureOpenAIOptions>().Bind(builder.Configuration.GetSection($@"{nameof(AzureOpenAIOptions)}")).ValidateDataAnnotations();
 builder.Services.AddOptionsWithValidateOnStart<QdrantOptions>().Bind(builder.Configuration.GetSection($@"{ nameof(QdrantOptions)}")).ValidateDataAnnotations();
 
+// Services.
 builder.Services.AddHealthChecks();
 
 builder.Services.AddEndpointsApiExplorer()
-                .AddSwaggerGen()
-                .AddSemanticKernel()
-                .AddSemanticKernelCosineStringSimilarityComparer()
+                .AddSwaggerGen();
+
+builder.Services.AddSemanticKernel()
+                .AddCosineStringSimilarityComparer()
+                .AddLocalChatHistoryProvider()
                 .AddChatAnswer();
 
+builder.Services.AddHttpClient()
+                .AddQdrantMemoryStore()
+                .AddSemanticTextMemory();
+
+// Swagger configuration and Controllers.
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc(Constants.AppVersion, new OpenApiInfo { Title = Constants.AppTitle, Version = Constants.AppVersion });
@@ -39,6 +49,7 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddControllers();
 
+// Build the app.
 var app = builder.Build();
  
 if (app.Environment.IsDevelopment())
@@ -48,7 +59,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
-        c.SwaggerEndpoint(Constants.swaggerEndpoint, Constants.AppTitle);
+        c.SwaggerEndpoint(Constants.SwaggerEndpoint, Constants.AppTitle);
     });
 }
 

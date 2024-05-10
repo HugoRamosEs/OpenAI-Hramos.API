@@ -5,21 +5,22 @@ using Encamina.Enmarcha.Core.DataAnnotations;
 namespace Hramos.API.Models;
 
 /// <summary>
-/// A request for compare two strings using cosine similarity.
+/// A request for save and get data from Qdrant.
 /// </summary>
-public class RequestCosine
+public class RequestQdrant
 {
     /// <summary>
-    /// String 1 to compare.
+    /// The name of the collection to be used.
     /// </summary>
     [Required]
     [NotEmptyOrWhitespace]
-    public string Str1 { get; set; }
+    public string CollectionName { get; set; }
 
     /// <summary>
-    /// String 2 to compare.
+    /// The input to be processed.
     /// </summary>
     [Required]
     [NotEmptyOrWhitespace]
-    public string Str2 { get; set; }
+    public string Input { get; set; }
 }
+

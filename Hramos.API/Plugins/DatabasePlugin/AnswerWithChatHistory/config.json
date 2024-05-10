@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "type": "completion",
+  "description": "Provides a response to the user with chat history",
+  "execution_settings": {
+    "default": {
+      "max_tokens": 500,
+      "temperature": 0.5
+    }
+  },
+  "input_variables": [
+    {
+      "name": "input",
+      "description": "This is the user's question",
+      "required": true
+    },
+    {
+      "name": "history",
+      "description": "This is the accumulated dialogue history that provides context for the conversation, ensuring the AI's responses are informed by previous interactions.",
+      "required": true
+    },
+    {
+      "name": "locale",
+      "description": "The language the user wants to recibe the answer",
+      "required": true
+    }
+  ]
+}

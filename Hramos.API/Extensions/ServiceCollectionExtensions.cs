@@ -1,4 +1,9 @@
-﻿using Encamina.Enmarcha.Core;
+﻿#pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+#pragma warning disable SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+#pragma warning disable SKEXP0020 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+
+using Encamina.Enmarcha.Core;
+using Encamina.Enmarcha.SemanticKernel.Abstractions;
 
 using Microsoft.Extensions.Options;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -11,103 +16,128 @@ using Hramos.API.Abstractions;
 using Hramos.API.Options;
 using Hramos.API.Internals;
 
-namespace Hramos.API.Extensions
+namespace Hramos.API.Extensions;
+
+/// <summary>
+/// Extension methods to configure default services for OpenAI-based and Qdrant services.
+/// </summary>
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    /// <summary>
+    /// Adds a semantic kernel (<see cref="Kernel"/>) to the <see cref="IServiceCollection"/> as scoped service.
+    /// </summary>
+    /// <remarks>
+    /// This extension method requires a <see cref="AzureOpenAIOptions"/> to be already configured.
+    /// </remarks>
+    /// <param name="services"> The <see cref="IServiceCollection"/> to add services to.</param>
+    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
+    public static IServiceCollection AddSemanticKernel(this IServiceCollection services)
     {
-        public static IServiceCollection AddSemanticKernel(this IServiceCollection services)
+        services.TryAddScoped(sp =>
         {
-            services.TryAddScoped(sp =>
+            var logger = sp.GetRequiredService<ILogger<Kernel>>();
+            var azureOpenAIOptions = sp.GetRequiredService<IOptions<AzureOpenAIOptions>>().Value;
+
+            var kernelBuilder = Kernel.CreateBuilder()
+                                      .AddAzureOpenAIChatCompletion(azureOpenAIOptions.ChatDeploymentName, azureOpenAIOptions.Endpoint, azureOpenAIOptions.Key)
+                                      .AddAzureOpenAITextEmbeddingGeneration(azureOpenAIOptions.EmbeddingDeploymentName, azureOpenAIOptions.Endpoint, azureOpenAIOptions.Key);
+
+            kernelBuilder.Services.AddSingleton(logger);
+            var kernel = kernelBuilder.Build();
+
+            // Imported plugins...
+            kernel.ImportPluginFromPromptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.PluginsDirectory, @"TranslatePlugin"), @"TranslatePlugin");
+            kernel.ImportPluginFromPromptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.PluginsDirectory, @"DatabasePlugin"), @"DatabasePlugin");
+
+            return kernel;
+        });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds a chat answer from user prompt (<see cref="IChatAnswer"/>) to the <see cref="IServiceCollection"/> as scoped service.
+    /// </summary>
+    /// <param name="services"> The <see cref="IServiceCollection"/> to add services to.</param>
+    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
+    public static IServiceCollection AddChatAnswer(this IServiceCollection services)
+    {
+        services.AddScoped<IChatAnswer, ChatAnswer>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Adds Qdrant vector database as a memory store (<see cref="IMemoryStore"/>) to the <see cref="IServiceCollection"/> as a singleton service.
+    /// </summary>
+    /// <remarks>
+    /// This extension methods requires a <see cref="QdrantOptions"/> to be already configured.
+    /// </remarks>
+    /// <param name="services"> The <see cref="IServiceCollection"/> to add services to.</param>
+    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
+    public static IServiceCollection AddQdrantMemoryStore(this IServiceCollection services)
+    {
+
+        return services.AddSingleton<IMemoryStore>(sp =>
+        {
+            var optionsMonitor = sp.GetRequiredService<IOptionsMonitor<QdrantOptions>>();
+
+            var httpClient = new HttpClient(new HttpClientHandler()
             {
-                var logger = sp.GetRequiredService<ILogger<Kernel>>();
-                var azureOpenAIOptions = sp.GetRequiredService<IOptions<AzureOpenAIOptions>>().Value;
+                CheckCertificateRevocationList = true,
+            }, disposeHandler: false);
 
-                #pragma warning disable SKEXP0010
-                var kernelBuilder = Kernel.CreateBuilder()
-                                          .AddAzureOpenAIChatCompletion(azureOpenAIOptions.ChatDeploymentName, azureOpenAIOptions.Endpoint, azureOpenAIOptions.Key)
-                                          .AddAzureOpenAITextEmbeddingGeneration(azureOpenAIOptions.EmbeddingDeploymentName, azureOpenAIOptions.Endpoint, azureOpenAIOptions.Key);
-                #pragma warning restore SKEXP0010
-
-                kernelBuilder.Services.AddSingleton(logger);
-                var kernel = kernelBuilder.Build();
-
-                kernel.ImportPluginFromPromptDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, Constants.PluginsDirectory, @"TranslatePlugin"), "TranslatePlugin");
-
-                return kernel;
-            });
-
-            return services;
-        }
-
-        public static IServiceCollection AddChatAnswer(this IServiceCollection services)
-        {
-            services.AddScoped<IChatAnswer, ChatAnswer>();
-            return services;
-        }
-
-        #pragma warning disable SKEXP0001
-        #pragma warning disable SKEXP0020
-        /// <summary>
-        /// Adds Qdrant vector database as a memory store (<see cref="IMemoryStore"/>) to the <see cref="IServiceCollection"/> as a singleton service.
-        /// </summary>
-        /// <remarks>
-        /// This extension methods requires a <see cref="QdrantOptions"/> to be already configured.
-        /// </remarks>
-        /// <param name="services"> The <see cref="IServiceCollection"/> to add services to.</param>
-        /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-        public static IServiceCollection AddQdrantMemoryStore(this IServiceCollection services)
-        {
-            return services.AddSingleton<IMemoryStore>(sp =>
+            static QdrantMemoryStore Builder(IServiceProvider serviceProvider, HttpClient httpClient, QdrantOptions options)
             {
-                var optionsMonitor = sp.GetRequiredService<IOptionsMonitor<QdrantOptions>>();
+                httpClient.ConfigureHttpClientForQdrant(options);
 
-                var httpClient = new HttpClient(new HttpClientHandler()
-                {
-                    CheckCertificateRevocationList = true,
-                }, disposeHandler: false);
+                return new QdrantMemoryStore(httpClient, options.VectorSize, loggerFactory: serviceProvider.GetService<ILoggerFactory>());
+            }
 
-                static QdrantMemoryStore Builder(IServiceProvider serviceProvider, HttpClient httpClient, QdrantOptions options)
-                {
-                    httpClient.ConfigureHttpClientForQdrant(options);
+            var debouncedBuilder = Debouncer.Debounce<QdrantOptions>(options => Builder(sp, httpClient, options), 300);
 
-                    return new QdrantMemoryStore(httpClient, options.VectorSize, loggerFactory: serviceProvider.GetService<ILoggerFactory>());
-                }
+            var memory = Builder(sp, httpClient, optionsMonitor.CurrentValue);
 
-                var debouncedBuilder = Debouncer.Debounce<QdrantOptions>(options => Builder(sp, httpClient, options), 300);
+            optionsMonitor.OnChange(debouncedBuilder);
 
-                var memory = Builder(sp, httpClient, optionsMonitor.CurrentValue);
+            return memory;
+        });
 
-                optionsMonitor.OnChange(debouncedBuilder);
+    }
 
-                return memory;
-            });
-        }
-
-        /// <summary>
-        /// Adds semantic text memory (<see cref="ISemanticTextMemory"/>) to the <see cref="IServiceCollection"/> in the <see cref="ServiceLifetime.Scoped">scoped service lifetime</see>,
-        /// based on user preferences.
-        /// </summary>
-        /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
-        /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
-        public static IServiceCollection AddSemanticTextMemory(this IServiceCollection services)
+    /// <summary>
+    /// Adds semantic text memory (<see cref="ISemanticTextMemory"/>) to the <see cref="IServiceCollection"/> in the <see cref="ServiceLifetime.Scoped">scoped service lifetime</see>,
+    /// based on user preferences.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
+    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
+    public static IServiceCollection AddSemanticTextMemory(this IServiceCollection services)
+    {
+        return services.AddScoped(sp =>
         {
-            return services.AddScoped(sp =>
-            {
-                var azureOpenAIOptions = sp.GetRequiredService<IOptions<AzureOpenAIOptions>>().Value;
-                var memoryStore = sp.GetRequiredService<IMemoryStore>();
+            var azureOpenAIOptions = sp.GetRequiredService<IOptions<AzureOpenAIOptions>>().Value;
+            var memoryStore = sp.GetRequiredService<IMemoryStore>();
 
-                return new MemoryBuilder()
-                    .WithAzureOpenAITextEmbeddingGeneration(azureOpenAIOptions.EmbeddingsModel, azureOpenAIOptions.Endpoint, azureOpenAIOptions.Key)
-                    .WithMemoryStore(sp.GetRequiredService<IMemoryStore>())
-                    .Build();
-            });
-        }
-        #pragma warning restore SKEXP0001
-        #pragma warning restore SKEXP0020
+            return new MemoryBuilder()
+                .WithAzureOpenAITextEmbeddingGeneration(azureOpenAIOptions.EmbeddingDeploymentName, azureOpenAIOptions.Endpoint, azureOpenAIOptions.Key)
+                .WithMemoryStore(memoryStore)
+                .Build();
+        });
+    }
 
-        public static IServiceCollection AddQdrantSnapshotHandler(this IServiceCollection services)
-        {
-            return services.AddSingleton<IQdrantSnapshotHandler, QdrantSnapshotHandler>();
-        }
+    /// <summary>
+    /// Adds a local chat history provider (<see cref="IChatHistoryProvider"/>) to the <see cref="IServiceCollection"/> as scoped service.
+    /// </summary>
+    /// <param name="services">The <see cref="IServiceCollection"/> to add services to.</param>
+    /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
+    public static IServiceCollection AddLocalChatHistoryProvider(this IServiceCollection services)
+    {
+        services.AddSingleton<IChatHistoryProvider, LocalChatHistoryProvider>();
+
+        return services;
     }
 }
+
+#pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+#pragma warning restore SKEXP0010 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+#pragma warning restore SKEXP0020 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
